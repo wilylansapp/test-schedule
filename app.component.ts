@@ -9,11 +9,48 @@ import {
   GroupModel,
   ResizeService,
   DragAndDropService,
+  ViewsModel,
+  TimelineMonthService,
+  NavigatingEventArgs,
 } from '@syncfusion/ej2-angular-schedule';
 import { employeeEventData } from './data';
 import { TimePickerComponent } from '@syncfusion/ej2-angular-calendars';
 import { ScheduleData } from './schedule.model';
 import { ScheduleService } from './schedule.service';
+export const views: ViewsModel[] = [
+  {
+    option: 'TimelineDay',
+    timeScale: { slotCount: 1 },
+    allowVirtualScrolling: false,
+  },
+  {
+    option: 'TimelineWeek',
+    allowVirtualScrolling: false,
+  },
+  {
+    option: 'TimelineMonth',
+    allowVirtualScrolling: false,
+  },
+  {
+    option: 'TimelineMonth',
+    displayName: 'Quadrimestre',
+    interval: 4,
+    allowVirtualScrolling: false,
+  },
+  {
+    option: 'TimelineMonth',
+    displayName: 'Semestre',
+    interval: 6,
+    allowVirtualScrolling: false,
+  },
+  {
+    option: 'TimelineMonth',
+    displayName: 'Année',
+    interval: 12,
+    allowVirtualScrolling: false,
+  },
+];
+
 export const linesRessources = [
   {
     text: 'Cycle PO',
@@ -83,12 +120,7 @@ export const linesRessources = [
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  providers: [
-    TimelineViewsService,
-    AgendaService,
-    ResizeService,
-    DragAndDropService,
-  ],
+  providers: [TimelineViewsService, TimelineMonthService],
 })
 export class AppComponent implements OnInit {
   @ViewChild('scheduleObj', null)
@@ -96,10 +128,12 @@ export class AppComponent implements OnInit {
   public linesRessources: any[] = linesRessources;
 
   students: ScheduleData[] = [];
-  public selectedDate: Date = new Date(2018, 3, 4);
+  public selectedDate: Date = new Date(2022, 8, 1);
   public group: GroupModel = {
     resources: ['lines'],
   };
+  public currentView: View = 'TimelineMonth';
+  views = views;
   public eventSettings: EventSettingsModel = { dataSource: employeeEventData };
   public categoryDataSource: Object[] = [
     { text: 'Nancy', id: 1, groupId: 1, color: '#df5286' },
@@ -111,27 +145,53 @@ export class AppComponent implements OnInit {
   ];
 
   constructor(private scheduleService: ScheduleService) {}
-  ngOnInit() {}
-  onActionComplete(args): void {
-    if (args.requestType === 'dateNavigate') {
-      this.getEvents();
-    }
+  ngOnInit() {
+    this.getEvents();
   }
 
   getEvents() {
     const studentsObservable = this.scheduleService.getSchedule();
-    studentsObservable.subscribe((scheduleData: ScheduleData[]) => {
+    studentsObservable.subscribe((scheduleData) => {
       let initialData: Object[] = <Object[]>(
         extend([], this.scheduleObj.eventSettings.dataSource, null, true)
       );
       scheduleData.forEach((element) => {
-        if (element.Id < 16) {
-          initialData.push(element);
-        }
+        console.log(element);
+        initialData.push(element);
       });
       this.eventSettings = {
         dataSource: initialData,
       };
     });
+  }
+  public onNavigating(event: NavigatingEventArgs): void {}
+  onRendred(event) {
+    console.log(event);
+  }
+
+  private updateHeaderRows(currentView: string, viewIndex: number): void {
+    switch (currentView) {
+      case 'TimelineDay':
+        this.scheduleObj.headerRows = [{ option: 'Date' }, { option: 'Hour' }];
+        break;
+
+      case 'TimelineWeek':
+        this.scheduleObj.headerRows = [{ option: 'Week' }, { option: 'Date' }];
+        break;
+
+      case 'TimelineMonth':
+        if (viewIndex === 5) {
+          this.scheduleObj.headerRows = [
+            { option: 'Year' },
+            { option: 'Month' },
+          ];
+        } else {
+          this.scheduleObj.headerRows = [
+            { option: 'Month' },
+            { option: 'Week' },
+          ];
+        }
+        break;
+    }
   }
 }
