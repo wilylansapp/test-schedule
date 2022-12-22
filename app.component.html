@@ -7,12 +7,14 @@
       [selectedDate]="selectedDate"
       [views]="views"
       [(currentView)]="currentView"
+      cssClass="timeline-resource-grouping"
       [group]="group"
       [eventSettings]="eventSettings"
       (actionComplete)="onActionComplete($event)"
       (eventRendered)="onRendred($event)"
       [rowAutoHeight]="true"
       (navigating)="onNavigating($event)"
+			(actionComplete)="onActionComplete($event)"
     >
       <e-resources>
         <e-resource

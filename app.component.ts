@@ -143,6 +143,7 @@ export class AppComponent implements OnInit {
     { text: 'Micheal', id: 5, groupId: 3, color: '#df5286' },
     { text: 'Root', id: 6, groupId: 3, color: '#00bdae' },
   ];
+  dayWidth: any;
 
   constructor(private scheduleService: ScheduleService) {}
   ngOnInit() {
@@ -164,11 +165,42 @@ export class AppComponent implements OnInit {
       };
     });
   }
-  public onNavigating(event: NavigatingEventArgs): void {}
-  onRendred(event) {
-    console.log(event);
+  public onNavigating(event: NavigatingEventArgs): void {
+    this.updateHeaderRows(event.currentView, event.viewIndex);
   }
-
+  onRendred(args) {
+    if (this.currentView === 'TimelineMonth') {
+      this.dayWidth =
+        this.dayWidth ??
+        document.querySelector('.e-date-header-wrap').clientWidth /
+          (new Date(
+            this.selectedDate.getFullYear(),
+            this.selectedDate.getMonth() + 1,
+            0
+          ).getDate() *
+            this.scheduleObj.activeViewOptions.interval); //To calculate the width of a work cell
+      const diffInDay = args.data.data.count; //To calculate the number of days an event rendered.
+      const td: HTMLElement = document.querySelector(
+        '.e-work-cells[data-date="' +
+          this.resetTime(args.data.StartTime).getTime() +
+          '"]'
+      ); //To find the work cell element in which the appointment started
+      const left = td ? td.offsetLeft : args.element.style.left; //To calculate the left position of that work cell
+      args.element.style.left = left + 'px'; //To assign the above left position to the appointment element
+      args.element.style.width = diffInDay * this.dayWidth + 'px'; //To set width for the appointment element.
+    }
+  }
+  onActionComplete(args): void {
+    if (
+      args.requestType === 'viewNavigate' ||
+      args.requestType === 'dateNavigate'
+    ) {
+      this.dayWidth = null;
+    }
+  }
+  resetTime(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
   private updateHeaderRows(currentView: string, viewIndex: number): void {
     switch (currentView) {
       case 'TimelineDay':
