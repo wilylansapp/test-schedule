@@ -178,16 +178,16 @@ export class AppComponent implements OnInit {
             this.selectedDate.getMonth() + 1,
             0
           ).getDate() *
-            this.scheduleObj.activeViewOptions.interval); //To calculate the width of a work cell
-      const diffInDay = args.data.data.count; //To calculate the number of days an event rendered.
+            this.scheduleObj.activeViewOptions.interval); //to calculate the width of a work cell
+      const diffInDay = args.data.data.count; //to calculate number of days an event rendered.
       const td: HTMLElement = document.querySelector(
         '.e-work-cells[data-date="' +
           this.resetTime(args.data.StartTime).getTime() +
           '"]'
-      ); //To find the work cell element in which the appointment started
-      const left = td ? td.offsetLeft : args.element.style.left; //To calculate the left position of that work cell
-      args.element.style.left = left + 'px'; //To assign the above left position to the appointment element
-      args.element.style.width = diffInDay * this.dayWidth + 'px'; //To set width for the appointment element.
+      ); //to find the work cell element in which the appointment started
+      const left = td ? td.offsetLeft : args.element.style.left; //to calculate the left position of that work cell
+      args.element.style.left = left + 'px'; //to assign the above left position to the appointment element
+      args.element.style.width = diffInDay * this.dayWidth + 'px'; //to set width for the appointment element.
     }
   }
   onActionComplete(args): void {
