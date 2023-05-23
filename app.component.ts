@@ -1,23 +1,14 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
-import { extend, Internationalization } from '@syncfusion/ej2-base';
-import {
-  ScheduleComponent,
-  EventSettingsModel,
-  View,
-  TimelineViewsService,
-  AgendaService,
-  GroupModel,
-  ResizeService,
-  DragAndDropService,
-  ViewsModel,
-  TimelineMonthService,
-  NavigatingEventArgs,
-} from '@syncfusion/ej2-angular-schedule';
 import { employeeEventData } from './data';
 import { TimePickerComponent } from '@syncfusion/ej2-angular-calendars';
 import { ScheduleData } from './schedule.model';
 import { ScheduleService } from './schedule.service';
-export const views: ViewsModel[] = [
+import {
+  ScheduleComponent,
+  TimelineMonthService,
+  TimelineViewsService,
+} from '@syncfusion/ej2-angular-schedule';
+import { Component, OnInit, ViewChild } from '@angular/core';
+export const views = [
   {
     option: 'TimelineDay',
     timeScale: { slotCount: 1 },
@@ -129,12 +120,12 @@ export class AppComponent implements OnInit {
 
   students: ScheduleData[] = [];
   public selectedDate: Date = new Date(2022, 8, 1);
-  public group: GroupModel = {
+  public group = {
     resources: ['lines'],
   };
-  public currentView: View = 'TimelineMonth';
+  public currentView = 'TimelineMonth';
   views = views;
-  public eventSettings: EventSettingsModel = { dataSource: employeeEventData };
+  public eventSettings = { dataSource: employeeEventData };
   public categoryDataSource: Object[] = [
     { text: 'Nancy', id: 1, groupId: 1, color: '#df5286' },
     { text: 'Steven', id: 2, groupId: 1, color: '#7fa900' },
@@ -153,11 +144,8 @@ export class AppComponent implements OnInit {
   getEvents() {
     const studentsObservable = this.scheduleService.getSchedule();
     studentsObservable.subscribe((scheduleData) => {
-      let initialData: Object[] = <Object[]>(
-        extend([], this.scheduleObj.eventSettings.dataSource, null, true)
-      );
+      let initialData: Object[] = this.scheduleObj.eventSettings.dataSource;
       scheduleData.forEach((element) => {
-        console.log(element);
         initialData.push(element);
       });
       this.eventSettings = {
@@ -165,7 +153,7 @@ export class AppComponent implements OnInit {
       };
     });
   }
-  public onNavigating(event: NavigatingEventArgs): void {
+  public onNavigating(event: any): void {
     this.updateHeaderRows(event.currentView, event.viewIndex);
   }
   onRendred(args) {
